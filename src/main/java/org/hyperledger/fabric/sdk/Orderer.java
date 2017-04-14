@@ -14,6 +14,8 @@
 
 package org.hyperledger.fabric.sdk;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Properties;
 
 import io.netty.util.internal.StringUtil;
@@ -31,7 +33,7 @@ import static org.hyperledger.fabric.sdk.helper.Utils.checkGrpcUrl;
 /**
  * The Orderer class represents a orderer to which SDK sends deploy, invoke, or query requests.
  */
-public class Orderer {
+public class Orderer  implements Closeable{
     private static final Log logger = LogFactory.getLog(Orderer.class);
     private final Properties properties;
     private boolean shutdown = false;
@@ -190,6 +192,10 @@ public class Orderer {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
+        shutdown(true);
+    }
+
+    @Override public void close() throws IOException {
         shutdown(true);
     }
 } // end Orderer
