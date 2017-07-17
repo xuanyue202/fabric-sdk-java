@@ -58,6 +58,7 @@ class Endpoint {
     private NettyChannelBuilder channelBuilder = null;
 
     private static final Map<String, String> CN_CACHE = Collections.synchronizedMap(new HashMap<>());
+    private final int maxMessageSize = 100 * 1024 * 1024;
 
     Endpoint(String url, Properties properties) {
 
@@ -127,12 +128,12 @@ class Endpoint {
         try {
             if (protocol.equalsIgnoreCase("grpc")) {
                 this.channelBuilder = NettyChannelBuilder.forAddress(addr, port)
-                        .usePlaintext(true);
+                        .usePlaintext(true).maxInboundMessageSize(maxMessageSize);
                 addNettyBuilderProps(channelBuilder, properties);
             } else if (protocol.equalsIgnoreCase("grpcs")) {
                 if (Utils.isNullOrEmpty(pem)) {
                     // use root certificate
-                    this.channelBuilder = NettyChannelBuilder.forAddress(addr, port);
+                    this.channelBuilder = NettyChannelBuilder.forAddress(addr, port).maxInboundMessageSize(maxMessageSize);
                     addNettyBuilderProps(channelBuilder, properties);
                 } else {
                     try {
@@ -146,7 +147,7 @@ class Endpoint {
                                 .build();
                         this.channelBuilder = NettyChannelBuilder.forAddress(addr, port)
                                 .sslContext(sslContext)
-                                .negotiationType(ntype);
+                                .negotiationType(ntype).maxInboundMessageSize(maxMessageSize);
                         if (cn != null) {
                             channelBuilder.overrideAuthority(cn);
                         }

@@ -33,7 +33,7 @@ import static org.hyperledger.fabric.sdk.helper.Utils.checkGrpcUrl;
 /**
  * The Orderer class represents a orderer to which SDK sends deploy, invoke, or query requests.
  */
-public class Orderer  implements Closeable{
+public class Orderer  implements Closeable {
     private static final Log logger = LogFactory.getLog(Orderer.class);
     private final Properties properties;
     private boolean shutdown = false;

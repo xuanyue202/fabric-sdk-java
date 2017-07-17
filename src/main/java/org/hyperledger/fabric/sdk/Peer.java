@@ -34,7 +34,7 @@ import static org.hyperledger.fabric.sdk.helper.Utils.checkGrpcUrl;
 /**
  * The Peer class represents a peer to which SDK sends deploy, or query proposals requests.
  */
-public class Peer  implements Closeable{
+public class Peer  implements Closeable {
     private static final Log logger = LogFactory.getLog(Peer.class);
     private volatile EndorserClient endorserClent;
     private final Properties properties;
