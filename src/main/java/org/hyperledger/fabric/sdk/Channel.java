@@ -14,59 +14,18 @@
 
 package org.hyperledger.fabric.sdk;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.StatusRuntimeException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hyperledger.fabric.protos.common.Common.Block;
-import org.hyperledger.fabric.protos.common.Common.BlockMetadata;
-import org.hyperledger.fabric.protos.common.Common.ChannelHeader;
-import org.hyperledger.fabric.protos.common.Common.Envelope;
-import org.hyperledger.fabric.protos.common.Common.Header;
-import org.hyperledger.fabric.protos.common.Common.HeaderType;
-import org.hyperledger.fabric.protos.common.Common.LastConfig;
-import org.hyperledger.fabric.protos.common.Common.Metadata;
-import org.hyperledger.fabric.protos.common.Common.Payload;
-import org.hyperledger.fabric.protos.common.Common.SignatureHeader;
-import org.hyperledger.fabric.protos.common.Common.Status;
-import org.hyperledger.fabric.protos.common.Configtx.ConfigEnvelope;
-import org.hyperledger.fabric.protos.common.Configtx.ConfigGroup;
-import org.hyperledger.fabric.protos.common.Configtx.ConfigSignature;
-import org.hyperledger.fabric.protos.common.Configtx.ConfigUpdateEnvelope;
-import org.hyperledger.fabric.protos.common.Configtx.ConfigValue;
+import org.hyperledger.fabric.protos.common.Common.*;
+import org.hyperledger.fabric.protos.common.Configtx.*;
 import org.hyperledger.fabric.protos.common.Ledger;
 import org.hyperledger.fabric.protos.msp.MspConfig;
 import org.hyperledger.fabric.protos.orderer.Ab;
-import org.hyperledger.fabric.protos.orderer.Ab.BroadcastResponse;
-import org.hyperledger.fabric.protos.orderer.Ab.DeliverResponse;
-import org.hyperledger.fabric.protos.orderer.Ab.SeekInfo;
-import org.hyperledger.fabric.protos.orderer.Ab.SeekPosition;
-import org.hyperledger.fabric.protos.orderer.Ab.SeekSpecified;
+import org.hyperledger.fabric.protos.orderer.Ab.*;
 import org.hyperledger.fabric.protos.peer.FabricProposal;
 import org.hyperledger.fabric.protos.peer.FabricProposal.SignedProposal;
 import org.hyperledger.fabric.protos.peer.FabricProposalResponse;
@@ -78,34 +37,20 @@ import org.hyperledger.fabric.protos.peer.Query.ChaincodeInfo;
 import org.hyperledger.fabric.protos.peer.Query.ChaincodeQueryResponse;
 import org.hyperledger.fabric.protos.peer.Query.ChannelQueryResponse;
 import org.hyperledger.fabric.sdk.BlockEvent.TransactionEvent;
-import org.hyperledger.fabric.sdk.exception.CryptoException;
-import org.hyperledger.fabric.sdk.exception.EventHubException;
-import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
-import org.hyperledger.fabric.sdk.exception.PeerException;
-import org.hyperledger.fabric.sdk.exception.ProposalException;
-import org.hyperledger.fabric.sdk.exception.TransactionEventException;
-import org.hyperledger.fabric.sdk.exception.TransactionException;
+import org.hyperledger.fabric.sdk.exception.*;
 import org.hyperledger.fabric.sdk.helper.Config;
 import org.hyperledger.fabric.sdk.helper.DiagnosticFileDumper;
 import org.hyperledger.fabric.sdk.helper.Utils;
-import org.hyperledger.fabric.sdk.transaction.InstallProposalBuilder;
-import org.hyperledger.fabric.sdk.transaction.InstantiateProposalBuilder;
-import org.hyperledger.fabric.sdk.transaction.JoinPeerProposalBuilder;
-import org.hyperledger.fabric.sdk.transaction.ProposalBuilder;
-import org.hyperledger.fabric.sdk.transaction.ProtoUtils;
-import org.hyperledger.fabric.sdk.transaction.QueryInstalledChaincodesBuilder;
-import org.hyperledger.fabric.sdk.transaction.QueryInstantiatedChaincodesBuilder;
-import org.hyperledger.fabric.sdk.transaction.QueryPeerChannelsBuilder;
-import org.hyperledger.fabric.sdk.transaction.TransactionBuilder;
-import org.hyperledger.fabric.sdk.transaction.TransactionContext;
-import org.hyperledger.fabric.sdk.transaction.UpgradeProposalBuilder;
+import org.hyperledger.fabric.sdk.transaction.*;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
 import static org.hyperledger.fabric.sdk.User.userContextCheck;
 import static org.hyperledger.fabric.sdk.helper.Utils.isNullOrEmpty;
-import static org.hyperledger.fabric.sdk.transaction.ProtoUtils.createChannelHeader;
-import static org.hyperledger.fabric.sdk.transaction.ProtoUtils.getCurrentFabricTimestamp;
-import static org.hyperledger.fabric.sdk.transaction.ProtoUtils.getSignatureHeaderAsByteString;
+import static org.hyperledger.fabric.sdk.transaction.ProtoUtils.*;
 
 /**
  * The class representing a channel with which the client SDK interacts.
@@ -362,8 +307,14 @@ public class Channel {
 
                     if (duration > CHANNEL_CONFIG_WAIT_TIME) {
                         //waited long enough .. throw an exception
-                        throw new TransactionException(format("Channel %s update error timed out after %d ms. Status value %d. Status %s", name,
-                                duration, statusCode, trxResult.getStatus().name()));
+                        String info = trxResult.getInfo();
+                        if (null == info) {
+                            info = "";
+
+                        }
+
+                        throw new TransactionException(format("Channel %s update error timed out after %d ms. Status value %d. Status %s. %s", name,
+                                duration, statusCode, trxResult.getStatus().name(), info));
                     }
 
                     try {
@@ -375,8 +326,15 @@ public class Channel {
 
                 } else if (200 != statusCode) {
                     // Can't retry.
-                    throw new TransactionException(format("New channel %s error. StatusValue %d. Status %s", name,
-                            statusCode, "" + trxResult.getStatus()));
+
+                    String info = trxResult.getInfo();
+                    if (null == info) {
+                        info = "";
+
+                    }
+
+                    throw new TransactionException(format("New channel %s error. StatusValue %d. Status %s. %s", name,
+                            statusCode, "" + trxResult.getStatus(), info));
                 }
 
             } while (200 != statusCode); // try again
@@ -2378,7 +2336,6 @@ public class Channel {
                     if (null != diagnosticFileDumper) {
                         logger.trace(format("Sending to channel %s, orderer: %s, transaction: %s", name, orderer.getName(),
                                 diagnosticFileDumper.createDiagnosticProtobufFile(transactionEnvelope.toByteArray())));
-
                     }
 
                     resp = orderer.sendTransaction(transactionEnvelope);
@@ -2391,7 +2348,26 @@ public class Channel {
                 } catch (Exception e) {
                     String emsg = format("Channel %s unsuccessful sendTransaction to orderer", name);
                     if (resp != null) {
-                        emsg = format("Channel %s unsuccessful sendTransaction to orderer. Status %s", name, resp.getStatus());
+
+                        StringBuilder respdata = new StringBuilder(400);
+
+                        Status status = resp.getStatus();
+                        if (null != status) {
+                            respdata.append(status.name());
+                            respdata.append("-");
+                            respdata.append(status.getNumber());
+                        }
+
+                        String info = resp.getInfo();
+                        if (null != info && !info.isEmpty()) {
+                            if (respdata.length() > 0) {
+                                respdata.append(", ");
+                            }
+
+                            respdata.append("Additional information: ").append(info);
+
+                        }
+                        emsg = format("Channel %s unsuccessful sendTransaction to orderer.  %s", name, respdata.toString());
                     }
 
                     logger.error(emsg, e);
@@ -2404,7 +2380,28 @@ public class Channel {
                 logger.debug(format("Channel %s successful sent to Orderer transaction id: %s", name, proposalTransactionID));
                 return sret;
             } else {
-                String emsg = format("Channel %s failed to place transaction %s on Orderer. Cause: UNSUCCESSFUL", name, proposalTransactionID);
+                StringBuilder respdata = new StringBuilder(400);
+                if (resp != null) {
+                    Status status = resp.getStatus();
+                    if (null != status) {
+                        respdata.append(status.name());
+                        respdata.append("-");
+                        respdata.append(status.getNumber());
+                    }
+
+                    String info = resp.getInfo();
+                    if (null != info && !info.isEmpty()) {
+                        if (respdata.length() > 0) {
+                            respdata.append(", ");
+                        }
+
+                        respdata.append("Additional information: ").append(info);
+
+                    }
+
+                }
+                String emsg = format("Channel %s failed to place transaction %s on Orderer. Cause: UNSUCCESSFUL. %s",
+                        name, proposalTransactionID, respdata.toString());
                 CompletableFuture<TransactionEvent> ret = new CompletableFuture<>();
                 ret.completeExceptionally(new Exception(emsg));
                 return ret;

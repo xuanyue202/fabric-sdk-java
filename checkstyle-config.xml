@@ -87,6 +87,11 @@
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
 
+        <!--<module name="MethodLength">-->
+        <!--<property name="max" value="250"/>-->
+        <!--</module>-->
+
+
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
         <module name="MethodLength"/>
