@@ -14,6 +14,8 @@
 
 package org.hyperledger.fabric.sdk;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -32,7 +34,7 @@ import static org.hyperledger.fabric.sdk.helper.Utils.checkGrpcUrl;
 /**
  * The Peer class represents a peer to which SDK sends deploy, or query proposals requests.
  */
-public class Peer {
+public class Peer  implements Closeable {
     private static final Log logger = LogFactory.getLog(Peer.class);
     private volatile EndorserClient endorserClent;
     private final Properties properties;
@@ -231,5 +233,9 @@ public class Peer {
     protected void finalize() throws Throwable {
         shutdown(true);
         super.finalize();
+    }
+
+    @Override public void close() throws IOException {
+        shutdown(true);
     }
 } // end Peer
