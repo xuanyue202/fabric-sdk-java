@@ -148,9 +148,6 @@ public class CryptoPrimitives implements CryptoSuite {
         return certificate;
     }
 
-    /**
-     * @inheritDoc
-     */
 
     @Override
     public boolean verify(byte[] pemCertificate, String signatureAlgorithm, byte[] signature, byte[] plainText) throws CryptoException {
