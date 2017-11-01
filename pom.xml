@@ -36,6 +36,8 @@
         <alpn-boot-version>8.1.7.v20160121</alpn-boot-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.7.9</jacoco.version>
+        <gpg.executable>gpg2</gpg.executable>
+	    <nexusUrl>http://mvn.sl.cloud9.ibm.com/</nexusUrl>
     </properties>
 
     <reporting>
@@ -97,7 +99,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.3.1</version>
+            <version>3.4.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
         <dependency>
@@ -230,7 +232,7 @@
                 <configuration>
                     <argLine>${failsafeArgLine}</argLine>
                     <includes>
-                        <include>**/IntegrationSuite.java</include>
+                        <include>**/${org.hyperledger.fabric.sdktest.ITSuite}</include>
                     </includes>
                     <skipITs>${skipITs}</skipITs>
                     <!--<argLine>-->
@@ -494,7 +496,7 @@
                             <git-commit-id>${git.commit.id}</git-commit-id>
                             <git-branch>${git.branch}</git-branch>
                             <git-commit-time>${git.commit.time}</git-commit-time>
-                            <fabric-sdk-java-version>${fabric.sdk.java.version}</fabric-sdk-java-version>
+                            <fabric-sdk-java-version>${project.version}</fabric-sdk-java-version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -502,12 +504,18 @@
 
         </plugins>
     </build>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>ibm-nexus</id>
+			<name>Nexus Releases</name>
+			<url>${nexusUrl}repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>ibm-nexus</id>
+			<name>Nexus Snapshot</name>
+			<url>${nexusUrl}repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
     <profiles>
         <profile>
             <id>release</id>
@@ -519,9 +527,10 @@
                         <version>1.6.7</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <serverId>ibm-nexus</serverId>
+                            <nexusUrl>${nexusUrl}</nexusUrl>
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
+	                        <skipStaging>true</skipStaging>
                         </configuration>
                     </plugin>
                     <plugin>
