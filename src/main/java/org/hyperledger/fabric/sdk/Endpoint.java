@@ -14,22 +14,6 @@
 
 package org.hyperledger.fabric.sdk;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.net.ssl.SSLException;
-
 import com.google.common.collect.ImmutableMap;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.GrpcSslContexts;
@@ -47,6 +31,21 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.hyperledger.fabric.sdk.helper.Utils;
 import org.hyperledger.fabric.sdk.security.CryptoPrimitives;
 
+import javax.net.ssl.SSLException;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.hyperledger.fabric.sdk.helper.Utils.parseGrpcUrl;
 
 class Endpoint {
@@ -58,6 +57,7 @@ class Endpoint {
     private NettyChannelBuilder channelBuilder = null;
 
     private static final Map<String, String> CN_CACHE = Collections.synchronizedMap(new HashMap<>());
+
     private final int maxMessageSize = 100 * 1024 * 1024;
 
     Endpoint(String url, Properties properties) {
@@ -133,7 +133,8 @@ class Endpoint {
             } else if (protocol.equalsIgnoreCase("grpcs")) {
                 if (Utils.isNullOrEmpty(pem)) {
                     // use root certificate
-                    this.channelBuilder = NettyChannelBuilder.forAddress(addr, port).maxInboundMessageSize(maxMessageSize);
+                    this.channelBuilder = NettyChannelBuilder.forAddress(addr, port)
+                            .maxInboundMessageSize(maxMessageSize);
                     addNettyBuilderProps(channelBuilder, properties);
                 } else {
                     try {
@@ -147,7 +148,8 @@ class Endpoint {
                                 .build();
                         this.channelBuilder = NettyChannelBuilder.forAddress(addr, port)
                                 .sslContext(sslContext)
-                                .negotiationType(ntype).maxInboundMessageSize(maxMessageSize);
+                                .negotiationType(ntype)
+                                .maxInboundMessageSize(maxMessageSize);
                         if (cn != null) {
                             channelBuilder.overrideAuthority(cn);
                         }

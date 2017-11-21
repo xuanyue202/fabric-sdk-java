@@ -13,11 +13,6 @@
  */
 package org.hyperledger.fabric.sdk;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.hyperledger.fabric.protos.common.Common.Block;
@@ -25,6 +20,11 @@ import org.hyperledger.fabric.protos.ledger.rwset.Rwset.TxReadWriteSet;
 import org.hyperledger.fabric.protos.peer.Chaincode.ChaincodeInput;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
 import org.hyperledger.fabric.sdk.transaction.ProtoUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.hyperledger.fabric.protos.peer.FabricProposalResponse.Endorsement;
 
@@ -321,6 +321,13 @@ public class BlockInfo {
 
             }
 
+            /**
+             * Get read write set for this transaction. Will return null on for Eventhub events.
+             * For eventhub events find the block by block number to get read write set if needed.
+             *
+             * @return Read write set.
+             */
+
             public TxReadWriteSetInfo getTxReadWriteSet() {
 
                 TxReadWriteSet txReadWriteSet = transactionAction.getPayload().getAction().getProposalResponsePayload()
@@ -330,6 +337,19 @@ public class BlockInfo {
                 }
 
                 return new TxReadWriteSetInfo(txReadWriteSet);
+
+            }
+
+            /**
+             * Get chaincode events for this transaction.
+             *
+             * @return A chaincode event if the chaincode set an event otherwise null.
+             */
+
+            public ChaincodeEvent getEvent() {
+
+                return transactionAction.getPayload().getAction().getProposalResponsePayload()
+                        .getExtension().getEvent();
 
             }
 
