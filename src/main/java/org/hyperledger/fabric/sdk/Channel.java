@@ -308,11 +308,7 @@ public class Channel {
 
                     if (duration > CHANNEL_CONFIG_WAIT_TIME) {
                         //waited long enough .. throw an exception
-                        String info = trxResult.getInfo();
-                        if (null == info) {
-                            info = "";
-
-                        }
+                        String info = "";
 
                         throw new TransactionException(format("Channel %s update error timed out after %d ms. Status value %d. Status %s. %s", name,
                                 duration, statusCode, trxResult.getStatus().name(), info));
@@ -328,12 +324,7 @@ public class Channel {
                 } else if (200 != statusCode) {
                     // Can't retry.
 
-                    String info = trxResult.getInfo();
-                    if (null == info) {
-                        info = "";
-
-                    }
-
+                    String info = "";
                     throw new TransactionException(format("New channel %s error. StatusValue %d. Status %s. %s", name,
                             statusCode, "" + trxResult.getStatus(), info));
                 }
@@ -2359,15 +2350,6 @@ public class Channel {
                             respdata.append(status.getNumber());
                         }
 
-                        String info = resp.getInfo();
-                        if (null != info && !info.isEmpty()) {
-                            if (respdata.length() > 0) {
-                                respdata.append(", ");
-                            }
-
-                            respdata.append("Additional information: ").append(info);
-
-                        }
                         emsg = format("Channel %s unsuccessful sendTransaction to orderer.  %s", name, respdata.toString());
                     }
 
@@ -2389,17 +2371,6 @@ public class Channel {
                         respdata.append("-");
                         respdata.append(status.getNumber());
                     }
-
-                    String info = resp.getInfo();
-                    if (null != info && !info.isEmpty()) {
-                        if (respdata.length() > 0) {
-                            respdata.append(", ");
-                        }
-
-                        respdata.append("Additional information: ").append(info);
-
-                    }
-
                 }
                 String emsg = format("Channel %s failed to place transaction %s on Orderer. Cause: UNSUCCESSFUL. %s",
                         name, proposalTransactionID, respdata.toString());
