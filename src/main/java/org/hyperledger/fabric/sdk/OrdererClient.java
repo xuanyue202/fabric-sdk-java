@@ -14,12 +14,6 @@
 
 package org.hyperledger.fabric.sdk;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -31,6 +25,12 @@ import org.hyperledger.fabric.protos.orderer.Ab.DeliverResponse;
 import org.hyperledger.fabric.protos.orderer.AtomicBroadcastGrpc;
 import org.hyperledger.fabric.sdk.exception.TransactionException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import static java.lang.String.format;
 import static org.hyperledger.fabric.protos.orderer.Ab.DeliverResponse.TypeCase.STATUS;
 
@@ -38,7 +38,7 @@ import static org.hyperledger.fabric.protos.orderer.Ab.DeliverResponse.TypeCase.
  * Sample client code that makes gRPC calls to the server.
  */
 class OrdererClient {
-    private static final long ORDERER_WAIT_TIME = 3000L;
+    private static final long ORDERER_WAIT_TIME = 6000000L;
     private final String channelName;
     private final ManagedChannelBuilder channelBuilder;
     private boolean shutdown = false;

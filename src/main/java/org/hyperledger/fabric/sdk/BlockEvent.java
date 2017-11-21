@@ -13,14 +13,14 @@
  */
 package org.hyperledger.fabric.sdk;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.hyperledger.fabric.protos.common.Common.Block;
 import org.hyperledger.fabric.protos.peer.PeerEvents.Event;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A wrapper for the Block returned in an Event
@@ -41,6 +41,12 @@ public class BlockEvent extends BlockInfo {
 
     private final EventHub eventHub;
     private final Event event;
+
+    /**
+     * Raw proto buff event.
+     *
+     * @return Return raw protobuf event.
+     */
 
     public Event getEvent() {
         return event;

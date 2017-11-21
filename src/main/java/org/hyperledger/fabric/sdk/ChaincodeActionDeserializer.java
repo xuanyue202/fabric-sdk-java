@@ -16,12 +16,12 @@
 
 package org.hyperledger.fabric.sdk;
 
-import java.lang.ref.WeakReference;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.hyperledger.fabric.protos.ledger.rwset.Rwset.TxReadWriteSet;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
+
+import java.lang.ref.WeakReference;
 
 import static org.hyperledger.fabric.protos.peer.FabricProposal.ChaincodeAction;
 
@@ -52,11 +52,19 @@ class ChaincodeActionDeserializer {
 
         }
 
-        //TODO events ?
-
-        //     ret.getResponse();
-
         return ret;
+
+    }
+
+    ChaincodeEvent getEvent() {
+
+        ChaincodeAction ca = getChaincodeAction();
+        ByteString eventsBytes = ca.getEvents();
+        if (eventsBytes == null || eventsBytes.isEmpty()) {
+            return null;
+        }
+
+        return new ChaincodeEvent(eventsBytes);
 
     }
 

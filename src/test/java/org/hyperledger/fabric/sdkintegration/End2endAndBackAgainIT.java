@@ -14,36 +14,10 @@
 
 package org.hyperledger.fabric.sdkintegration;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
-
 import org.hyperledger.fabric.protos.common.Configtx;
 import org.hyperledger.fabric.protos.peer.Query.ChaincodeInfo;
-import org.hyperledger.fabric.sdk.BlockEvent;
-import org.hyperledger.fabric.sdk.ChaincodeEndorsementPolicy;
-import org.hyperledger.fabric.sdk.ChaincodeID;
+import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.ChaincodeResponse.Status;
-import org.hyperledger.fabric.sdk.Channel;
-import org.hyperledger.fabric.sdk.EventHub;
-import org.hyperledger.fabric.sdk.HFClient;
-import org.hyperledger.fabric.sdk.InstallProposalRequest;
-import org.hyperledger.fabric.sdk.Peer;
-import org.hyperledger.fabric.sdk.ProposalResponse;
-import org.hyperledger.fabric.sdk.QueryByChaincodeRequest;
-import org.hyperledger.fabric.sdk.SDKUtils;
-import org.hyperledger.fabric.sdk.TestConfigHelper;
-import org.hyperledger.fabric.sdk.TransactionProposalRequest;
-import org.hyperledger.fabric.sdk.UpgradeProposalRequest;
-import org.hyperledger.fabric.sdk.User;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
 import org.hyperledger.fabric.sdk.exception.TransactionEventException;
@@ -54,10 +28,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
+
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Test end to end scenario
@@ -583,14 +562,7 @@ public class End2endAndBackAgainIT {
 
     ///// NO OP ... leave in case it's needed.
     private void waitOnFabric(int additional) {
-        // wait a few seconds for the peers to catch up with each other via the gossip network.
-        // Another way would be to wait on all the peers event hubs for the event containing the transaction TxID
-//        try {
-//            out("Wait %d milliseconds for peers to sync with each other", gossipWaitTime + additional);
-//            TimeUnit.MILLISECONDS.sleep(gossipWaitTime + additional);
-//        } catch (InterruptedException e) {
-//            fail("should not have jumped out of sleep mode. No other threads should be running");
-//        }
+
     }
 
     private static boolean checkInstalledChaincode(HFClient client, Peer peer, String ccName, String ccPath, String ccVersion) throws InvalidArgumentException, ProposalException {

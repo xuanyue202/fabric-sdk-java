@@ -13,22 +13,18 @@
  */
 package org.hyperledger.fabric.sdk.testutils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hyperledger.fabric.sdk.helper.Utils;
 import org.hyperledger.fabric.sdkintegration.SampleOrg;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Config allows for a global config of the toolkit. Central location for all
@@ -52,11 +48,9 @@ public class TestConfig {
 
     private static final String PROPBASE = "org.hyperledger.fabric.sdktest.";
 
-    private static final String GOSSIPWAITTIME = PROPBASE + "GossipWaitTime";
     private static final String INVOKEWAITTIME = PROPBASE + "InvokeWaitTime";
     private static final String DEPLOYWAITTIME = PROPBASE + "DeployWaitTime";
     private static final String PROPOSALWAITTIME = PROPBASE + "ProposalWaitTime";
-
 
     private static final String INTEGRATIONTESTS_ORG = PROPBASE + "integrationTests.org.";
     private static final Pattern orgPat = Pattern.compile("^" + Pattern.quote(INTEGRATIONTESTS_ORG) + "([^\\.]+)\\.mspid$");
@@ -89,11 +83,9 @@ public class TestConfig {
 
             // Default values
 
-            defaultProperty(GOSSIPWAITTIME, "5000");
             defaultProperty(INVOKEWAITTIME, "100000");
             defaultProperty(DEPLOYWAITTIME, "120000");
             defaultProperty(PROPOSALWAITTIME, "120000");
-
 
             //////
             defaultProperty(INTEGRATIONTESTS_ORG + "peerOrg1.mspid", "Org1MSP");
@@ -255,10 +247,6 @@ public class TestConfig {
         return Integer.parseInt(getProperty(DEPLOYWAITTIME));
     }
 
-    public int getGossipWaitTime() {
-        return Integer.parseInt(getProperty(GOSSIPWAITTIME));
-    }
-
     public long getProposalWaitTime() {
         return Integer.parseInt(getProperty(PROPOSALWAITTIME));
     }
@@ -272,7 +260,6 @@ public class TestConfig {
 
     }
 
-
     public Properties getPeerProperties(String name) {
 
         return getEndPointProperties("peer", name);
@@ -283,8 +270,7 @@ public class TestConfig {
 
         return getEndPointProperties("orderer", name);
 
-   }
-
+    }
 
     private Properties getEndPointProperties(final String type, final String name) {
 
@@ -328,6 +314,5 @@ public class TestConfig {
         }
 
     }
-
 
 }
