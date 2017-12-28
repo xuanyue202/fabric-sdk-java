@@ -1,4 +1,7 @@
 target
+build
+.gradle
+gradle.properties
 *.swp
 *.swo
 *.class
